@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "228381901389",
-    "project_id": "asepproj-2c368",
-    "storage_bucket": "asepproj-2c368.firebasestorage.app"
+    "project_number": "318005835742",
+    "project_id": "authtut-74f0e",
+    "storage_bucket": "authtut-74f0e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:228381901389:android:f835c06e85e66fc8db9204",
+        "mobilesdk_app_id": "1:318005835742:android:aa001bfa1b9336dd7c4f4f",
         "android_client_info": {
           "package_name": "com.example.authenticationprac"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "318005835742-i849cinq0a032cg6jvjalbtmtfiotl22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDeZgYfSKRnlidPyYjEpEEes08_UDSkjTs"
+          "current_key": "AIzaSyC0qsPXhlopPsnySveIA9nMELjqKIiFlco"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "318005835742-i849cinq0a032cg6jvjalbtmtfiotl22.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

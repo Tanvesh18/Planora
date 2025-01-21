@@ -5,7 +5,6 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
 
 android {
@@ -51,3 +50,5 @@ dependencies{
 flutter {
     source = "../.."
 }
+
+apply plugin: 'com.google.gms.google-services'
