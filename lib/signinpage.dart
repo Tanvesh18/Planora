@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'homepage.dart';
+import 'user_info_page.dart';
 
 class Signinpage extends StatefulWidget {
   const Signinpage({super.key});
@@ -64,6 +66,27 @@ class _SigninpageState extends State<Signinpage> {
           backgroundColor: Colors.redAccent,
         ),
       );
+    }
+  }
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        return null; // The user canceled the sign-in
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print(e.toString());
+      return null;
     }
   }
 
@@ -188,85 +211,98 @@ class _SigninpageState extends State<Signinpage> {
                       ),
                     ),
                   ),
-                   Padding(
-                padding: const EdgeInsets.all(16),
-                child: Expanded(
-                  child: Row(
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: const Color.fromARGB(
+                                  255, 255, 255, 255), // Line color
+                              thickness: 2,
+                            ),
+                          ),
+                          Text(
+                            'OR SIGN IN WITH',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: const Color.fromARGB(
+                                  255, 255, 255, 255), // Line color
+                              thickness:
+                                  2, // Line thickness // Empty space to the right of the line
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Divider(
-                          color: const Color.fromARGB(
-                              255, 255, 255, 255), // Line color
-                          thickness: 2,
+                      GestureDetector(
+                        onTap: () async {
+                          User? user = await signInWithGoogle();
+                          if (user != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserInfoPage(user: user),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 65,
+                          padding: EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('background/googlelogo.png'),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      Text(
-                        'OR SIGN IN WITH',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: const Color.fromARGB(
-                              255, 255, 255, 255), // Line color
-                          thickness:
-                              2, // Line thickness // Empty space to the right of the line
+                      const SizedBox(height: 20, width: 20),
+                      Center(
+                        child: Container(
+                          width: 60,
+                          height: 70,
+                          padding: EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('background/applelogo.png'),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 60,
-                      height: 65,
-                      padding: EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('background/googlelogo.png'),
-                          fit:BoxFit.fill
-                          ),
-                      )
-                      )
-                    ),
-                  ),
-                  const SizedBox(height: 20,width: 20),
-                  Center(
-                    child: Container(
-                      width: 60,
-                      height: 70,
-                      padding: EdgeInsets.all(9),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('background/applelogo.png'),
-                          fit:BoxFit.fill
-                          ),
-                      )
-                      )
-                    ),
-                  ),
+                  )
                 ],
-              )
-            ]),
+              ),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
