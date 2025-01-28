@@ -69,26 +69,26 @@ class _SigninpageState extends State<Signinpage> {
     }
   }
 
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        return null; // The user canceled the sign-in
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      return userCredential.user;
-    } catch (e) {
-      print(e.toString());
-      return null;
+Future<User?> signInWithGoogle() async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) {
+      return null; // The user canceled the sign-in
     }
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    return userCredential.user;
+  } catch (e) {
+    print(e.toString());
+    return null;
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,7 @@ class _SigninpageState extends State<Signinpage> {
               ),
             ),
           ),
+          SizedBox(height:20),
           SingleChildScrollView(
             child: Center(
               child: Column(
@@ -116,7 +117,7 @@ class _SigninpageState extends State<Signinpage> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'WELCOME TO MONK',
+                    'WELCOME TO ___',
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontFamily: 'Impact',

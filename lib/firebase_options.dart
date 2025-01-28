@@ -41,8 +41,8 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBzHmrWwUS5iIeRnDBLRUX7y5F5-euYdEY',
-    appId: '1:228381901389:web:d3bf249d7c8c45e3db9204',
+    apiKey: 'AIzaSyCGj0KkWVgx7bvhFKX5wOL4u_iog3sqfbk',
+    appId: '318005835742-i849cinq0a032cg6jvjalbtmtfiotl22.apps.googleusercontent.com',
     messagingSenderId: '228381901389',
     projectId: 'asepproj-2c368',
     authDomain: 'asepproj-2c368.firebaseapp.com',
@@ -50,8 +50,8 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDeZgYfSKRnlidPyYjEpEEes08_UDSkjTs',
-    appId: '1:228381901389:android:f835c06e85e66fc8db9204',
+    apiKey: 'AIzaSyC0qsPXhlopPsnySveIA9nMELjqKIiFlco',
+    appId: '318005835742-eqd92psu1alnjqhec3opvbsjss7l4n64.apps.googleusercontent.com',
     messagingSenderId: '228381901389',
     projectId: 'asepproj-2c368',
     storageBucket: 'asepproj-2c368.firebasestorage.app',
