@@ -1,3 +1,4 @@
+import 'package:authenticationprac/aftersignin/task.dart';
 import 'package:authenticationprac/signinpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Signinpage()
+       initialRoute: '/task',
+    routes: {
+      '/task': (context) => Task(),
+      '/signin': (context) => Signinpage(),
+    },
       );
   }
 }

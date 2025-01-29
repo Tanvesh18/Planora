@@ -27,7 +27,7 @@ class _AboutusState extends State<Aboutus> {
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('background/coolbg2.jpg'), // Background image
+                  image: AssetImage('background/newbg.jpeg'), // Background image
                   fit: BoxFit.cover,
                 ),
               ),
@@ -42,6 +42,7 @@ class _AboutusState extends State<Aboutus> {
                     textAlign: TextAlign.center,
                     'Introduction About App',
                     style: TextStyle(
+                      
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
@@ -57,7 +58,7 @@ class _AboutusState extends State<Aboutus> {
                     '5) Intelligent Tutoring: AI-driven tutoring systems offer personalized learning experiences based on individual student needs and learning styles.\n'
                     '6) Automated Administrative Tasks: Automates routine administrative tasks like grading, attendance tracking, and schedule management, freeing up educators to focus more on teaching\n'
                     '7) Enhanced Communication: Uses AI to facilitate communication between students and teachers through smart chatbots and automated notifications.\n',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -66,6 +67,7 @@ class _AboutusState extends State<Aboutus> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
+                      
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -83,6 +85,7 @@ class _AboutusState extends State<Aboutus> {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -90,6 +93,7 @@ class _AboutusState extends State<Aboutus> {
                                 member['info']!,
                                 style: const TextStyle(
                                   fontSize: 14,
+                                  
                                   fontStyle: FontStyle.italic,
                                 ),
                                 textAlign: TextAlign.center,
@@ -106,12 +110,13 @@ class _AboutusState extends State<Aboutus> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
+                      
                     ),
                   ),
                   const SizedBox(height: 16),
                   const Text(
                     'Our app includes a variety of tools designed to enhance your experience:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -134,6 +139,7 @@ class _AboutusState extends State<Aboutus> {
                               'Flutter IDE',
                               style: TextStyle(
                                 fontSize: 16,
+                                
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -157,6 +163,7 @@ class _AboutusState extends State<Aboutus> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              
                             ),
                           ),
                         ],
@@ -176,6 +183,7 @@ class _AboutusState extends State<Aboutus> {
                           const Text(
                             'VS Code',
                             style: TextStyle(
+                              
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
