@@ -62,10 +62,14 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - background/coolbg.jpg
     - background/coolbg2.jpg
     - background/applelogo.png
     - background/googlelogo.png
+    - background/finaldrawerbg.jpg
+    - background/newbg.jpeg
+    - background/flutterpic.jpg
+    - background/firebasepic.jpg
+    - background/vscodepic.jpg
     # - fonts\impact.ttf
   #   - images/a_dot_ham.jpeg
 
