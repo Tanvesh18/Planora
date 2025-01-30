@@ -129,7 +129,7 @@ class _SigninpageState extends State<Signinpage> {
               ),
               const SizedBox(height: 30),
               const Text(
-                'MAKE YOUR PROFILE!',
+                'MASTER YOUR TASKS,ELEVATE YOUR TIME!',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 255, 255, 255),
