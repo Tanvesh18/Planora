@@ -1,8 +1,7 @@
-import 'package:authenticationprac/aftersignin/task.dart';
+import 'package:authenticationprac/tasksonly/task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'homepage.dart';
 
 class Signinpage extends StatefulWidget {
   const Signinpage({super.key});
@@ -34,7 +33,7 @@ class _SigninpageState extends State<Signinpage> {
       // Navigate to Homepage on successful login
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => Task()),
       );
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -120,7 +119,7 @@ class _SigninpageState extends State<Signinpage> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'WELCOME TO ___',
+                'PLANORA',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontFamily: 'Impact',
