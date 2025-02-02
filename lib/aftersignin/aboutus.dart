@@ -199,7 +199,7 @@ class _AboutusState extends State<Aboutus> {
                     'Branching and Merging: Git makes it easy to create branches for new features, bug fixes, or experiments, and then merge them back into the main codebase when they ready.\n'
                     'History and Audit: Every change is recorded with a timestamp and author information, making it possible to review and revert to previous versions if needed\n'
                     'Integration: Git integrates with various platforms like GitHub, GitLab, and Bitbucket for cloud-based repositories and additional tools for code reviews, CI/CD, and project management\n',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,color: Colors.white),
                   )
                 ],
               ),

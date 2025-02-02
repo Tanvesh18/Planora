@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 final user = FirebaseAuth.instance.currentUser;
 
 var myDrawer = Drawer(
+  
   child: Container(
     decoration: BoxDecoration(
       image: DecorationImage(
@@ -162,13 +163,17 @@ var myDrawer = Drawer(
 );
 
 var myAppBar = AppBar(
-  elevation: 4,
-  backgroundColor: Colors.transparent,
+  iconTheme: IconThemeData(
+    color: Colors.white,
+  ),
+  backgroundColor: Color.fromARGB(255, 0, 28, 43),
   centerTitle: true,
   title: Text(
     'PLANORA',
     style: TextStyle(
+      color: Colors.white,
       fontFamily: 'Impact',
+      letterSpacing: 1.5,
     ),
   ),
 );
