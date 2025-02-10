@@ -32,7 +32,7 @@ class Piechart extends StatelessWidget {
               color: Colors.purple,
             ),
             PieChartSectionData(
-              value: 20,
+              value: 60,
               radius: 50,
               color: Colors.yellow,
             ),

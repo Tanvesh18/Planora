@@ -1,6 +1,5 @@
 import 'package:authenticationprac/constants/constants.dart';
 import 'package:authenticationprac/tasksonly/taskmodel.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:authenticationprac/tasksonly/piechart.dart';
 import 'package:flutter/material.dart';
 
@@ -82,9 +81,9 @@ class _TaskState extends State<Task> {
                     ),
                   ],
                 ),
-                
+                SizedBox(height: 15),
                 SizedBox(
-                  height: 300,
+                  height: 250,
                   width: double.infinity,
                   child: Piechart()
                   ),
