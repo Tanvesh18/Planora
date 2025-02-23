@@ -3,7 +3,7 @@ import 'package:authenticationprac/signinpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -21,11 +21,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-       initialRoute: '/task',
-    routes: {
-      '/signin': (context) => Signinpage(),
-      '/task': (context) => Task(),
-    },
-      );
+      initialRoute: '/task',
+      routes: {
+        '/signin': (context) => Signinpage(),
+        '/task': (context) => Task(tasks: [],),
+      },
+    );
   }
 }

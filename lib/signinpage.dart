@@ -33,7 +33,7 @@ class _SigninpageState extends State<Signinpage> {
       // Navigate to Homepage on successful login
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Task()),
+        MaterialPageRoute(builder: (context) => Task(tasks: [],)),
       );
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -255,7 +255,7 @@ class _SigninpageState extends State<Signinpage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Task(),
+                              builder: (context) => Task(tasks: [],),
                             ),
                           );
                         }

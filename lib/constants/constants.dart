@@ -59,7 +59,7 @@ var myDrawer = Drawer(
             ),
             onTap: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Task()));
+                  context, MaterialPageRoute(builder: (context) => Task(tasks: [],)));
             },
           );
         }),
