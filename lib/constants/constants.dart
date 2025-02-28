@@ -1,3 +1,5 @@
+import 'package:authenticationprac/gemini/gemini.dart';
+
 import '../assigntaskonly/assigntask.dart';
 import '../tasksonly/task.dart';
 import 'package:flutter/material.dart';
@@ -126,6 +128,28 @@ var myDrawer = Drawer(
             onTap: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Help()));
+            },
+          );
+        }),
+        Builder(builder: (context) {
+          return ListTile(
+            leading: Icon(
+              Icons.chat,
+              size: 29,
+              color: Colors.white,
+            ),
+            title: Text(
+              'Gemini Chatbot',
+              style: TextStyle(
+                fontFamily: 'Impact',
+                fontSize: 20,
+                letterSpacing: 1.7,
+                color: Colors.white,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Chatbot()));
             },
           );
         }),

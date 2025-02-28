@@ -58,19 +58,10 @@ class _TaskState extends State<Task> {
 
   void _markTaskAsCompleted(int index) {
     setState(() {
-      // Create a copy of the completed task
       Map<String, String> completedTask = Map.from(tasks[index]);
-
-      // Update its status
       completedTask['status'] = 'Completed';
-
-      // Move to completedTasks
       completedTasks.add(completedTask);
-
-      // Remove from active task list
       tasks.removeAt(index);
-
-      // Recalculate counts
       _calculateTaskCounts();
     });
   }
@@ -140,8 +131,6 @@ class _TaskState extends State<Task> {
                                         "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
                                     Text(
                                         "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
-                                    Text(
-                                        "Status: ${tasks[index]['status'] ?? 'Unknown'}"),
                                     SizedBox(height: 10),
                                     ElevatedButton(
                                       onPressed: () =>

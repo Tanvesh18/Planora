@@ -2,8 +2,10 @@ import 'package:authenticationprac/tasksonly/task.dart';
 import 'package:authenticationprac/signinpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gemini/flutter_gemini.dart';
+const apiKey = 'AIzaSyCQWl1J9osgNdcbNK4chiLq_MuGFWnKGuE';
 void main() async {
+  Gemini.init(apiKey: apiKey);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
