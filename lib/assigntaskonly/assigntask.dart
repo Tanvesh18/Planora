@@ -1,5 +1,5 @@
 import 'package:authenticationprac/constants/constants.dart';
-import 'package:authenticationprac/tasksonly/task.dart';
+import 'package:authenticationprac/tasksonly/task.dart' show Task;
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -113,8 +113,9 @@ class _AssigntaskState extends State<Assigntask> {
                   children: [
                     Text("Title",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, 
+                            fontWeight: FontWeight.bold,
                             fontFamily: 'Impact',
+                            letterSpacing: 1.5,
                             fontSize: 20)),
                     TextField(
                         controller: _titleController,
@@ -122,11 +123,10 @@ class _AssigntaskState extends State<Assigntask> {
                     SizedBox(height: 10),
                     Text("Description",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, 
+                            fontWeight: FontWeight.bold,
                             fontFamily: 'Impact',
-                            fontSize: 20,
-                            ),
-                            ),
+                            letterSpacing: 1.5,
+                            fontSize: 20)),
                     TextField(
                         controller: _descriptionController,
                         decoration:
@@ -134,41 +134,38 @@ class _AssigntaskState extends State<Assigntask> {
                         maxLines: 3),
                     SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Start Time",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Impact',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  ),
-                                  ),
                             ElevatedButton(
                               onPressed: () => _pickTime(isStart: true),
-                              child: Text(startTime == null
-                                  ? "Pick Start Time"
-                                  : startTime!.format(context)),
+                              child: Text("Pick Start Time"),
+                            ),
+                            SizedBox(width: 10),
+                            Text(startTime?.format(context) ?? "Not Set",
+                            style: TextStyle(
+                              fontFamily: 'Impact',
+                              fontSize: 15,
+                              color: Colors.white,
+                            )
                             ),
                           ],
                         ),
+                        SizedBox(width: 10),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("End Time",
-                                style: TextStyle(
-                                  fontFamily: 'Impact',
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
                             ElevatedButton(
                               onPressed: () => _pickTime(isStart: false),
-                              child: Text(endTime == null
-                                  ? "Pick End Time"
-                                  : endTime!.format(context)),
+                              child: Text("Pick End Time"),
+                            ),
+                            SizedBox(width: 10),
+                            Text(endTime?.format(context) ?? "Not Set",
+                            style: TextStyle(
+                              fontFamily: 'Impact',
+                              fontSize: 15,
+                              color: Colors.white,
+                            )
                             ),
                           ],
                         ),

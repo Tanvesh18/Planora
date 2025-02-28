@@ -2,6 +2,7 @@ import 'package:authenticationprac/constants/constants.dart';
 import 'package:authenticationprac/tasksonly/taskmodel.dart';
 import 'package:authenticationprac/tasksonly/piechart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Task extends StatefulWidget {
   final List<Map<String, String>> tasks;
@@ -12,6 +13,68 @@ class Task extends StatefulWidget {
 }
 
 class _TaskState extends State<Task> {
+  int inProgressCount = 0;
+  int onHoldCount = 0;
+  int completedCount = 0;
+
+  List<Map<String, String>> tasks = [];
+  List<Map<String, String>> completedTasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tasks = List.from(widget.tasks); // ✅ Create a mutable copy of widget.tasks
+    _calculateTaskCounts();
+  }
+
+  void _calculateTaskCounts() {
+    setState(() {
+      inProgressCount = tasks
+          .where((task) => _isInProgress(task['startTime'], task['endTime']))
+          .length;
+      onHoldCount = tasks.where((task) => task['status'] == 'On Hold').length;
+      completedCount =
+          completedTasks.length; // ✅ Count completed tasks properly
+    });
+  }
+
+  bool _isInProgress(String? startTime, String? endTime) {
+    if (startTime == null || endTime == null) return false;
+    try {
+      DateTime now = DateTime.now();
+      DateTime start = DateFormat('hh:mm a').parse(startTime);
+      DateTime end = DateFormat('hh:mm a').parse(endTime);
+
+      // Ensure it's compared with today's date
+      start = DateTime(now.year, now.month, now.day, start.hour, start.minute);
+      end = DateTime(now.year, now.month, now.day, end.hour, end.minute);
+
+      return now.isAfter(start) && now.isBefore(end);
+    } catch (e) {
+      print("Error parsing time: $e");
+      return false;
+    }
+  }
+
+  void _markTaskAsCompleted(int index) {
+    setState(() {
+      // Create a copy of the completed task
+      Map<String, String> completedTask = Map.from(tasks[index]);
+
+      // Update its status
+      completedTask['status'] = 'Completed';
+
+      // Move to completedTasks
+      completedTasks.add(completedTask);
+
+      // Remove from active task list
+      tasks.removeAt(index);
+
+      // Recalculate counts
+      _calculateTaskCounts();
+    });
+  }
+
   @override
   Widget build(
     BuildContext context,
@@ -55,20 +118,36 @@ class _TaskState extends State<Task> {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: widget.tasks.length,
+                          itemCount: tasks.length, // ✅ Use local tasks list
                           itemBuilder: (context, index) {
+                            bool isInProgress = _isInProgress(
+                                tasks[index]['startTime'],
+                                tasks[index]['endTime']);
                             return Card(
                               elevation: 4,
                               margin: EdgeInsets.symmetric(vertical: 5),
+                              color: isInProgress ? Colors.blue.shade200 : null,
                               child: ListTile(
-                                title: Text(widget.tasks[index]['title'] ?? "No Title"),
+                                title:
+                                    Text(tasks[index]['title'] ?? "No Title"),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(widget.tasks[index]['description'] ?? "No Description"),
+                                    Text(tasks[index]['description'] ??
+                                        "No Description"),
                                     SizedBox(height: 5),
-                                    Text("Start Time: ${widget.tasks[index]['startTime'] ?? 'Not Set'}"),
-                                    Text("End Time: ${widget.tasks[index]['endTime'] ?? 'Not Set'}"),
+                                    Text(
+                                        "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                    Text(
+                                        "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                    Text(
+                                        "Status: ${tasks[index]['status'] ?? 'Unknown'}"),
+                                    SizedBox(height: 10),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          _markTaskAsCompleted(index),
+                                      child: Text("Complete Task"),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -95,29 +174,31 @@ class _TaskState extends State<Task> {
                     childAspectRatio: 1.3,
                     children: [
                       SummaryCard(
-                        count: '24',
+                        count: '$inProgressCount',
                         label: 'In Progress',
                         color: Colors.blue.shade200,
                       ),
                       SummaryCard(
-                        count: '56',
-                        label: 'In Review',
-                        color: Colors.purple.shade200,
-                      ),
-                      SummaryCard(
-                        count: '16',
+                        count: '$onHoldCount',
                         label: 'On Hold',
                         color: Colors.amber.shade200,
                       ),
                       SummaryCard(
-                        count: '45',
+                        count: '$completedCount',
                         label: 'Completed',
                         color: Colors.green.shade200,
                       ),
                     ],
                   ),
                   SizedBox(height: 15),
-                  SizedBox(height: 250, width: double.infinity, child: Piechart()),
+                  SizedBox(
+                      height: 250,
+                      width: double.infinity,
+                      child: Piechart(
+                        inProgress: inProgressCount,
+                        completed: completedCount,
+                        onHold: onHoldCount,
+                      )),
                 ],
               ),
             ),
