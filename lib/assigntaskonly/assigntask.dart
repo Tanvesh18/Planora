@@ -89,111 +89,113 @@ class _AssigntaskState extends State<Assigntask> {
               ),
             ),
           ),
-          Column(
-            children: [
-              TableCalendar(
-                focusedDay: today,
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 3, 14),
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
+          SingleChildScrollView(  // Add this widget to make content scrollable
+            child: Column(
+              children: [
+                TableCalendar(
+                  focusedDay: today,
+                  firstDay: DateTime.utc(2010, 10, 16),
+                  lastDay: DateTime.utc(2030, 3, 14),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                  ),
+                  availableGestures: AvailableGestures.all,
+                  selectedDayPredicate: (day) => isSameDay(day, today),
+                  onDaySelected: _onDaySelected,
+                  eventLoader: (day) {
+                    return events[day] ?? [];
+                  },
                 ),
-                availableGestures: AvailableGestures.all,
-                selectedDayPredicate: (day) => isSameDay(day, today),
-                onDaySelected: _onDaySelected,
-                eventLoader: (day) {
-                  return events[day] ?? [];
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Title",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Impact',
-                            letterSpacing: 1.5,
-                            fontSize: 20)),
-                    TextField(
-                        controller: _titleController,
-                        decoration: InputDecoration(hintText: "Task Title")),
-                    SizedBox(height: 10),
-                    Text("Description",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Impact',
-                            letterSpacing: 1.5,
-                            fontSize: 20)),
-                    TextField(
-                        controller: _descriptionController,
-                        decoration:
-                            InputDecoration(hintText: "Task Description"),
-                        maxLines: 3),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => _pickTime(isStart: true),
-                              child: Text("Pick Start Time"),
-                            ),
-                            SizedBox(width: 10),
-                            Text(startTime?.format(context) ?? "Not Set",
-                            style: TextStyle(
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Title",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
                               fontFamily: 'Impact',
-                              fontSize: 15,
-                              color: Colors.white,
-                            )
-                            ),
-                          ],
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => _pickTime(isStart: false),
-                              child: Text("Pick End Time"),
-                            ),
-                            SizedBox(width: 10),
-                            Text(endTime?.format(context) ?? "Not Set",
-                            style: TextStyle(
+                              letterSpacing: 1.5,
+                              fontSize: 20)),
+                      TextField(
+                          controller: _titleController,
+                          decoration: InputDecoration(hintText: "Task Title")),
+                      SizedBox(height: 10),
+                      Text("Description",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
                               fontFamily: 'Impact',
-                              fontSize: 15,
-                              color: Colors.white,
-                            )
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _titleController.clear();
-                            _descriptionController.clear();
-                            startTime = null;
-                            endTime = null;
-                          },
-                          child: Text("Cancel"),
-                        ),
-                        ElevatedButton(
-                          onPressed: _saveTask,
-                          child: Text("Save"),
-                        ),
-                      ],
-                    ),
-                  ],
+                              letterSpacing: 1.5,
+                              fontSize: 20)),
+                      TextField(
+                          controller: _descriptionController,
+                          decoration:
+                              InputDecoration(hintText: "Task Description"),
+                          maxLines: 3),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => _pickTime(isStart: true),
+                                child: Text("Pick Start Time"),
+                              ),
+                              SizedBox(width: 10),
+                              Text(startTime?.format(context) ?? "Not Set",
+                              style: TextStyle(
+                                fontFamily: 'Impact',
+                                fontSize: 15,
+                                color: Colors.white,
+                              )
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: 10),
+                          Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => _pickTime(isStart: false),
+                                child: Text("Pick End Time"),
+                              ),
+                              SizedBox(width: 10),
+                              Text(endTime?.format(context) ?? "Not Set",
+                              style: TextStyle(
+                                fontFamily: 'Impact',
+                                fontSize: 15,
+                                color: Colors.white,
+                              )
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _titleController.clear();
+                              _descriptionController.clear();
+                              startTime = null;
+                              endTime = null;
+                            },
+                            child: Text("Cancel"),
+                          ),
+                          ElevatedButton(
+                            onPressed: _saveTask,
+                            child: Text("Save"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

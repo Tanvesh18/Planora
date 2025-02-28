@@ -1,5 +1,5 @@
 import 'package:authenticationprac/gemini/gemini.dart';
-
+import 'package:authenticationprac/user_info_page.dart';
 import '../assigntaskonly/assigntask.dart';
 import '../tasksonly/task.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 final user = FirebaseAuth.instance.currentUser;
 
 var myDrawer = Drawer(
-  
   child: Container(
     decoration: BoxDecoration(
       image: DecorationImage(
@@ -24,9 +23,24 @@ var myDrawer = Drawer(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(user?.photoURL ?? ''),
-                radius: 30,
+              Builder(
+                builder: (context) {
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to a new page when the avatar is clicked
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserInfoPage(user: user!), // Replace with your target page
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(user?.photoURL ?? ''),
+                      radius: 30,
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 20),
               Text(
@@ -43,7 +57,7 @@ var myDrawer = Drawer(
             ],
           ),
         ),
-        Builder(builder: (context) {
+        Builder(builder: (BuildContext context) {
           return ListTile(
             leading: Icon(
               Icons.calendar_today,
