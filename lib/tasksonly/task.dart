@@ -23,7 +23,7 @@ class _TaskState extends State<Task> {
   @override
   void initState() {
     super.initState();
-    tasks = List.from(widget.tasks); // ✅ Create a mutable copy of widget.tasks
+    tasks = List.from(widget.tasks); // Create a mutable copy of widget.tasks
     _calculateTaskCounts();
   }
 
@@ -34,7 +34,7 @@ class _TaskState extends State<Task> {
           .length;
       onHoldCount = tasks.where((task) => task['status'] == 'On Hold').length;
       completedCount =
-          completedTasks.length; // ✅ Count completed tasks properly
+          completedTasks.length; // Count completed tasks properly
     });
   }
 
