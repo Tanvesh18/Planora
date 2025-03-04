@@ -203,7 +203,7 @@ class _SigninpageState extends State<Signinpage> {
                     ),
                     child: Center(
                       child: Text(
-                        'Sign In',
+                        'Log In',
                         style: TextStyle(
                           fontFamily: 'Impact',
                           fontWeight: FontWeight.w300,

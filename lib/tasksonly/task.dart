@@ -18,7 +18,6 @@ class _TaskState extends State<Task> {
   int completedCount = 0;
 
   List<Map<String, String>> tasks = [];
-  List<Map<String, String>> completedTasks = [];
 
   @override
   void initState() {
@@ -30,11 +29,10 @@ class _TaskState extends State<Task> {
   void _calculateTaskCounts() {
     setState(() {
       inProgressCount = tasks
-          .where((task) => _isInProgress(task['startTime'], task['endTime']))
+          .where((task) => task['status'] != 'Completed' && _isInProgress(task['startTime'], task['endTime']))
           .length;
       onHoldCount = tasks.where((task) => task['status'] == 'On Hold').length;
-      completedCount =
-          completedTasks.length; // Count completed tasks properly
+      completedCount = tasks.where((task) => task['status'] == 'Completed').length;
     });
   }
 
@@ -45,7 +43,6 @@ class _TaskState extends State<Task> {
       DateTime start = DateFormat('hh:mm a').parse(startTime);
       DateTime end = DateFormat('hh:mm a').parse(endTime);
 
-      // Ensure it's compared with today's date
       start = DateTime(now.year, now.month, now.day, start.hour, start.minute);
       end = DateTime(now.year, now.month, now.day, end.hour, end.minute);
 
@@ -58,18 +55,13 @@ class _TaskState extends State<Task> {
 
   void _markTaskAsCompleted(int index) {
     setState(() {
-      Map<String, String> completedTask = Map.from(tasks[index]);
-      completedTask['status'] = 'Completed';
-      completedTasks.add(completedTask);
-      tasks.removeAt(index);
+      tasks[index]['status'] = 'Completed';
       _calculateTaskCounts();
     });
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Scaffold(
       drawer: myDrawer,
       appBar: myAppBar,
@@ -109,7 +101,7 @@ class _TaskState extends State<Task> {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: tasks.length, // ✅ Use local tasks list
+                          itemCount: tasks.length,
                           itemBuilder: (context, index) {
                             bool isInProgress = _isInProgress(
                                 tasks[index]['startTime'],
@@ -117,25 +109,28 @@ class _TaskState extends State<Task> {
                             return Card(
                               elevation: 4,
                               margin: EdgeInsets.symmetric(vertical: 5),
-                              color: isInProgress ? Colors.blue.shade200 : null,
+                              color: tasks[index]['status'] == 'Completed'
+                                  ? Colors.green.shade200
+                                  : isInProgress
+                                      ? Colors.blue.shade200
+                                      : null,
                               child: ListTile(
-                                title:
-                                    Text(tasks[index]['title'] ?? "No Title"),
+                                title: Text(tasks[index]['title'] ?? "No Title"),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(tasks[index]['description'] ??
-                                        "No Description"),
+                                    Text(tasks[index]['description'] ?? "No Description"),
                                     SizedBox(height: 5),
-                                    Text(
-                                        "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
-                                    Text(
-                                        "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                    Text("Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                    Text("End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
                                     SizedBox(height: 10),
                                     ElevatedButton(
-                                      onPressed: () =>
-                                          _markTaskAsCompleted(index),
-                                      child: Text("Complete Task"),
+                                      onPressed: tasks[index]['status'] == 'Completed'
+                                          ? null
+                                          : () => _markTaskAsCompleted(index),
+                                      child: tasks[index]['status'] == 'Completed'
+                                          ? Icon(Icons.check, color: Colors.green)
+                                          : Text("Complete Task"),
                                     ),
                                   ],
                                 ),
