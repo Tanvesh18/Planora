@@ -4,7 +4,6 @@ import '../assigntaskonly/assigntask.dart';
 import '../tasksonly/task.dart';
 import 'package:flutter/material.dart';
 import '../aftersignin/help.dart';
-import '../aftersignin/aboutus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final user = FirebaseAuth.instance.currentUser;
@@ -98,28 +97,6 @@ var myDrawer = Drawer(
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => Assigntask()));
-            },
-          );
-        }),
-        Builder(builder: (context) {
-          return ListTile(
-            leading: Icon(
-              Icons.group,
-              size: 29,
-              color: Colors.white,
-            ),
-            title: Text(
-              'About Us',
-              style: TextStyle(
-                fontFamily: 'Impact',
-                fontSize: 20,
-                letterSpacing: 1.7,
-                color: Colors.white,
-              ),
-            ),
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Aboutus()));
             },
           );
         }),
