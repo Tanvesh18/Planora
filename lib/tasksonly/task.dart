@@ -2,6 +2,7 @@ import 'package:authenticationprac/constants/constants.dart';
 import 'package:authenticationprac/tasksonly/taskmodel.dart';
 import 'package:authenticationprac/tasksonly/piechart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 class Task extends StatefulWidget {
@@ -16,6 +17,7 @@ class _TaskState extends State<Task> {
   int inProgressCount = 0;
   int onHoldCount = 0;
   int completedCount = 0;
+  int totalCompletedCount = 0;
 
   List<Map<String, String>> tasks = [];
 
@@ -27,12 +29,24 @@ class _TaskState extends State<Task> {
   }
 
   void _calculateTaskCounts() {
+    int inProgress = 0;
+    int onHold = 0;
+    int completed = totalCompletedCount;
+
+    for (var task in tasks) {
+      if (task['status'] == 'Completed') {
+        completed++;
+      } else if (task['status'] == 'On Hold') {
+        onHold++;
+      } else if (_isInProgress(task['startTime'], task['endTime'])) {
+        inProgress++;
+      }
+    }
+
     setState(() {
-      inProgressCount = tasks
-          .where((task) => task['status'] != 'Completed' && _isInProgress(task['startTime'], task['endTime']))
-          .length;
-      onHoldCount = tasks.where((task) => task['status'] == 'On Hold').length;
-      completedCount = tasks.where((task) => task['status'] == 'Completed').length;
+      inProgressCount = inProgress;
+      onHoldCount = onHold;
+      completedCount = completed;
     });
   }
 
@@ -54,8 +68,14 @@ class _TaskState extends State<Task> {
   }
 
   void _markTaskAsCompleted(int index) {
+  setState(() {
+    tasks[index]['status'] = 'Completed';
+    _calculateTaskCounts(); // This will correctly count completed tasks
+  });
+}
+  void _removeTask(int index) {
     setState(() {
-      tasks[index]['status'] = 'Completed';
+      tasks.removeAt(index);
       _calculateTaskCounts();
     });
   }
@@ -90,7 +110,7 @@ class _TaskState extends State<Task> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  widget.tasks.isEmpty
+                  tasks.isEmpty
                       ? Text(
                           "No tasks assigned yet!",
                           style: TextStyle(
@@ -106,33 +126,55 @@ class _TaskState extends State<Task> {
                             bool isInProgress = _isInProgress(
                                 tasks[index]['startTime'],
                                 tasks[index]['endTime']);
-                            return Card(
-                              elevation: 4,
-                              margin: EdgeInsets.symmetric(vertical: 5),
-                              color: tasks[index]['status'] == 'Completed'
-                                  ? Colors.green.shade200
-                                  : isInProgress
-                                      ? Colors.blue.shade200
-                                      : null,
-                              child: ListTile(
-                                title: Text(tasks[index]['title'] ?? "No Title"),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(tasks[index]['description'] ?? "No Description"),
-                                    SizedBox(height: 5),
-                                    Text("Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
-                                    Text("End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
-                                    SizedBox(height: 10),
-                                    ElevatedButton(
-                                      onPressed: tasks[index]['status'] == 'Completed'
-                                          ? null
-                                          : () => _markTaskAsCompleted(index),
-                                      child: tasks[index]['status'] == 'Completed'
-                                          ? Icon(Icons.check, color: Colors.green)
-                                          : Text("Complete Task"),
-                                    ),
-                                  ],
+                            return Slidable(
+                              endActionPane: ActionPane(
+                                motion: StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) => _removeTask(index),
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    backgroundColor: Colors.red,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ],
+                              ),
+                              child: Card(
+                                elevation: 4,
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                color: tasks[index]['status'] == 'Completed'
+                                    ? Colors.green.shade200
+                                    : isInProgress
+                                        ? Colors.blue.shade200
+                                        : null,
+                                child: ListTile(
+                                  title:
+                                      Text(tasks[index]['title'] ?? "No Title"),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tasks[index]['description'] ??
+                                          "No Description"),
+                                      SizedBox(height: 5),
+                                      Text(
+                                          "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                      Text(
+                                          "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                      SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: tasks[index]['status'] ==
+                                                'Completed'
+                                            ? null
+                                            : () => _markTaskAsCompleted(index),
+                                        child: tasks[index]['status'] ==
+                                                'Completed'
+                                            ? Icon(Icons.check,
+                                                color: Colors.green)
+                                            : Text("Complete Task"),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -158,6 +200,11 @@ class _TaskState extends State<Task> {
                     childAspectRatio: 1.3,
                     children: [
                       SummaryCard(
+                        count: '$completedCount',
+                        label: 'Completed',
+                        color: Colors.green.shade200,
+                      ),
+                      SummaryCard(
                         count: '$inProgressCount',
                         label: 'In Progress',
                         color: Colors.blue.shade200,
@@ -166,11 +213,6 @@ class _TaskState extends State<Task> {
                         count: '$onHoldCount',
                         label: 'On Hold',
                         color: Colors.amber.shade200,
-                      ),
-                      SummaryCard(
-                        count: '$completedCount',
-                        label: 'Completed',
-                        color: Colors.green.shade200,
                       ),
                     ],
                   ),

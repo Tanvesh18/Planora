@@ -97,7 +97,7 @@ class _HelpState extends State<Help> {
 // A custom widget for bullet points
 class BulletPoint extends StatelessWidget {
   final String text;
-  const BulletPoint({required this.text});
+  const BulletPoint({super.key, required this.text});
   @override
   Widget build(BuildContext context) {
     return Row(
