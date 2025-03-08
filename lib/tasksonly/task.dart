@@ -1,9 +1,11 @@
 import 'package:authenticationprac/constants/constants.dart';
-import 'package:authenticationprac/tasksonly/taskmodel.dart';
+import 'package:authenticationprac/tasksonly/task_provider.dart';
 import 'package:authenticationprac/tasksonly/piechart.dart';
+import 'package:authenticationprac/tasksonly/taskmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class Task extends StatefulWidget {
   final List<Map<String, String>> tasks;
@@ -17,28 +19,25 @@ class _TaskState extends State<Task> {
   int inProgressCount = 0;
   int onHoldCount = 0;
   int completedCount = 0;
-  int totalCompletedCount = 0;
-
-  List<Map<String, String>> tasks = [];
 
   @override
   void initState() {
     super.initState();
-    tasks = List.from(widget.tasks); // Create a mutable copy of widget.tasks
     _calculateTaskCounts();
   }
 
   void _calculateTaskCounts() {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     int inProgress = 0;
     int onHold = 0;
-    int completed = totalCompletedCount;
+    int completed = 0;
 
-    for (var task in tasks) {
+    for (var task in taskProvider.tasks) {
       if (task['status'] == 'Completed') {
         completed++;
       } else if (task['status'] == 'On Hold') {
         onHold++;
-      } else if (_isInProgress(task['startTime'], task['endTime'])) {
+      } else if (_isInProgress(task)) {
         inProgress++;
       }
     }
@@ -50,17 +49,20 @@ class _TaskState extends State<Task> {
     });
   }
 
-  bool _isInProgress(String? startTime, String? endTime) {
-    if (startTime == null || endTime == null) return false;
+  bool _isInProgress(Map<String, String> task) {
+    if (task['startTime'] == null || task['endTime'] == null || task['date'] == null) return false;
+
     try {
       DateTime now = DateTime.now();
-      DateTime start = DateFormat('hh:mm a').parse(startTime);
-      DateTime end = DateFormat('hh:mm a').parse(endTime);
+      DateTime taskDate = DateTime.parse(task["date"]!);
 
-      start = DateTime(now.year, now.month, now.day, start.hour, start.minute);
-      end = DateTime(now.year, now.month, now.day, end.hour, end.minute);
+      DateTime start = DateFormat('hh:mm a').parse(task['startTime']!);
+      DateTime end = DateFormat('hh:mm a').parse(task['endTime']!);
 
-      return now.isAfter(start) && now.isBefore(end);
+      DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day, start.hour, start.minute);
+      DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day, end.hour, end.minute);
+
+      return now.isAfter(fullStart) && now.isBefore(fullEnd);
     } catch (e) {
       print("Error parsing time: $e");
       return false;
@@ -68,20 +70,22 @@ class _TaskState extends State<Task> {
   }
 
   void _markTaskAsCompleted(int index) {
-  setState(() {
-    tasks[index]['status'] = 'Completed';
-    _calculateTaskCounts(); // This will correctly count completed tasks
-  });
-}
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    taskProvider.markTaskAsCompleted(index);
+    _calculateTaskCounts();
+  }
+
   void _removeTask(int index) {
-    setState(() {
-      tasks.removeAt(index);
-      _calculateTaskCounts();
-    });
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    taskProvider.removeTask(index);
+    _calculateTaskCounts();
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context);
+    final tasks = taskProvider.tasks;
+
     return Scaffold(
       drawer: myDrawer,
       appBar: myAppBar,
@@ -123,9 +127,12 @@ class _TaskState extends State<Task> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: tasks.length,
                           itemBuilder: (context, index) {
-                            bool isInProgress = _isInProgress(
-                                tasks[index]['startTime'],
-                                tasks[index]['endTime']);
+                            bool isInProgress = _isInProgress(tasks[index]);
+                            String? rawDate = tasks[index]['date'];
+                            String formattedDate = rawDate != null
+                                ? DateFormat('dd MMM yyyy').format(DateTime.parse(rawDate))
+                                : "No Date Set";
+
                             return Slidable(
                               endActionPane: ActionPane(
                                 motion: StretchMotion(),
@@ -148,29 +155,22 @@ class _TaskState extends State<Task> {
                                         ? Colors.blue.shade200
                                         : null,
                                 child: ListTile(
-                                  title:
-                                      Text(tasks[index]['title'] ?? "No Title"),
+                                  title: Text(tasks[index]['title'] ?? "No Title"),
                                   subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(tasks[index]['description'] ??
-                                          "No Description"),
+                                      Text(tasks[index]['description'] ?? "No Description"),
                                       SizedBox(height: 5),
-                                      Text(
-                                          "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
-                                      Text(
-                                          "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                      Text("Task Date: $formattedDate"),
+                                      Text("Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                      Text("End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
                                       SizedBox(height: 10),
                                       ElevatedButton(
-                                        onPressed: tasks[index]['status'] ==
-                                                'Completed'
+                                        onPressed: tasks[index]['status'] == 'Completed'
                                             ? null
                                             : () => _markTaskAsCompleted(index),
-                                        child: tasks[index]['status'] ==
-                                                'Completed'
-                                            ? Icon(Icons.check,
-                                                color: Colors.green)
+                                        child: tasks[index]['status'] == 'Completed'
+                                            ? Icon(Icons.check, color: Colors.green)
                                             : Text("Complete Task"),
                                       ),
                                     ],

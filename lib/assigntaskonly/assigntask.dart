@@ -1,6 +1,7 @@
 import 'package:authenticationprac/constants/constants.dart';
-import 'package:authenticationprac/tasksonly/task.dart' show Task;
+import 'package:authenticationprac/tasksonly/task_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Assigntask extends StatefulWidget {
@@ -14,7 +15,6 @@ class _AssigntaskState extends State<Assigntask> {
   DateTime today = DateTime.now();
   TimeOfDay? startTime;
   TimeOfDay? endTime;
-  Map<DateTime, List> events = {};
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -43,39 +43,35 @@ class _AssigntaskState extends State<Assigntask> {
   void _saveTask() {
     if (_titleController.text.isNotEmpty &&
         _descriptionController.text.isNotEmpty) {
-      setState(() {
-        events[today] = [
-          ...events[today] ?? [],
-          {
-            "title": _titleController.text,
-            "description": _descriptionController.text,
-            "startTime": startTime?.format(context) ?? "Not Set",
-            "endTime": endTime?.format(context) ?? "Not Set",
-          }
-        ];
+      final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
+      taskProvider.addTask({
+        "title": _titleController.text,
+        "description": _descriptionController.text,
+        "startTime": startTime?.format(context) ?? "Not Set",
+        "endTime": endTime?.format(context) ?? "Not Set",
+        "date": today.toIso8601String(),
+        "status": "Pending",
       });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Task(
-            tasks: events.values
-                .expand((e) => e)
-                .cast<Map<String, String>>()
-                .toList(),
-          ),
-        ),
-      );
-
+      // Clear input fields
       _titleController.clear();
       _descriptionController.clear();
-      startTime = null;
-      endTime = null;
+      setState(() {
+        startTime = null;
+        endTime = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Task added successfully!")),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context);
+
     return Scaffold(
       appBar: myAppBar,
       drawer: myDrawer,
@@ -89,7 +85,7 @@ class _AssigntaskState extends State<Assigntask> {
               ),
             ),
           ),
-          SingleChildScrollView(  // Add this widget to make content scrollable
+          SingleChildScrollView(
             child: Column(
               children: [
                 TableCalendar(
@@ -104,7 +100,7 @@ class _AssigntaskState extends State<Assigntask> {
                   selectedDayPredicate: (day) => isSameDay(day, today),
                   onDaySelected: _onDaySelected,
                   eventLoader: (day) {
-                    return events[day] ?? [];
+                    return taskProvider.getTasksForDay(day);
                   },
                 ),
                 Padding(
@@ -119,8 +115,31 @@ class _AssigntaskState extends State<Assigntask> {
                               letterSpacing: 1.5,
                               fontSize: 20)),
                       TextField(
-                          controller: _titleController,
-                          decoration: InputDecoration(hintText: "Task Title")),
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          hintText: "Enter Task Title",
+                          hintStyle: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 16),
+                          prefixIcon:
+                              Icon(Icons.edit, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade300, width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.blueAccent, width: 2),
+                          ),
+                        ),
+                        style: TextStyle(fontSize: 18),
+                        cursorColor: Colors.blueAccent,
+                      ),
                       SizedBox(height: 10),
                       Text("Description",
                           style: TextStyle(
@@ -129,44 +148,95 @@ class _AssigntaskState extends State<Assigntask> {
                               letterSpacing: 1.5,
                               fontSize: 20)),
                       TextField(
-                          controller: _descriptionController,
-                          decoration:
-                              InputDecoration(hintText: "Task Description"),
-                          maxLines: 3),
-                      SizedBox(height: 20),
+                        controller: _descriptionController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Enter Task Description",
+                          hintStyle: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 16),
+                          prefixIcon:
+                              Icon(Icons.description, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade300, width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.blueAccent, width: 2),
+                          ),
+                        ),
+                        style: TextStyle(fontSize: 18),
+                        cursorColor: Colors.blueAccent,
+                      ),
+                      SizedBox(height: 30),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Column(
                             children: [
-                              ElevatedButton(
-                                onPressed: () => _pickTime(isStart: true),
-                                child: Text("Pick Start Time"),
-                              ),
-                              SizedBox(width: 10),
-                              Text(startTime?.format(context) ?? "Not Set",
-                              style: TextStyle(
-                                fontFamily: 'Impact',
-                                fontSize: 15,
-                                color: Colors.white,
-                              )
+                              SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () => _pickTime(isStart: true),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueAccent,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 5,
+                                        offset: Offset(2, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    startTime?.format(context) ?? "Start Time",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          SizedBox(width: 10),
                           Column(
                             children: [
-                              ElevatedButton(
-                                onPressed: () => _pickTime(isStart: false),
-                                child: Text("Pick End Time"),
-                              ),
-                              SizedBox(width: 10),
-                              Text(endTime?.format(context) ?? "Not Set",
-                              style: TextStyle(
-                                fontFamily: 'Impact',
-                                fontSize: 15,
-                                color: Colors.white,
-                              )
+                              SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () => _pickTime(isStart: false),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueAccent,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 5,
+                                        offset: Offset(2, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    endTime?.format(context) ?? "End Time",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -180,14 +250,49 @@ class _AssigntaskState extends State<Assigntask> {
                             onPressed: () {
                               _titleController.clear();
                               _descriptionController.clear();
-                              startTime = null;
-                              endTime = null;
+                              setState(() {
+                                startTime = null;
+                                endTime = null;
+                              });
                             },
-                            child: Text("Cancel"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Colors.redAccent, // Red for cancel
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5, // Adds shadow effect
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: _saveTask,
-                            child: Text("Save"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green, // Green for save
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5, // Adds shadow effect
+                            ),
+                            child: Text(
+                              "Save",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ],
                       ),

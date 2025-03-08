@@ -1,15 +1,20 @@
-
 import 'package:authenticationprac/signinpage.dart';
 import 'package:authenticationprac/tasksonly/task.dart';
+import 'package:authenticationprac/tasksonly/task_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:provider/provider.dart';
+
 const apiKey = 'AIzaSyCQWl1J9osgNdcbNK4chiLq_MuGFWnKGuE';
 void main() async {
   Gemini.init(apiKey: apiKey);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => TaskProvider(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
