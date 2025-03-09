@@ -5,19 +5,21 @@ class Piechart extends StatelessWidget {
   final int inProgress;
   final int onHold;
   final int completed;
+  final int totalTasks;
 
   const Piechart({
     super.key,
     required this.inProgress,
     required this.onHold,
     required this.completed,
+    required this.totalTasks,
   });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
-      children: [ 
+      children: [
         Text(
           "OVERVIEW",
           style: TextStyle(
@@ -35,16 +37,29 @@ class Piechart extends StatelessWidget {
                 value: inProgress.toDouble(),
                 radius: 50,
                 color: Colors.blue,
+                title: '$inProgress\nIn Progress',
+                titleStyle: TextStyle(color: Colors.white, fontSize: 12),
               ),
               PieChartSectionData(
                 value: onHold.toDouble(),
                 radius: 50,
                 color: Colors.yellow,
+                title: '$onHold\nOn Hold',
+                titleStyle: TextStyle(color: Colors.black, fontSize: 12),
               ),
               PieChartSectionData(
                 value: completed.toDouble(),
                 radius: 50,
                 color: Colors.green,
+                title: '$completed\nCompleted',
+                titleStyle: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+              PieChartSectionData(
+                value: totalTasks.toDouble(),
+                radius: 50,
+                color: Colors.purple,
+                title: '$totalTasks\nTotal Tasks',
+                titleStyle: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ],
           ),

@@ -7,79 +7,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class Task extends StatefulWidget {
-  final List<Map<String, String>> tasks;
-  const Task({super.key, this.tasks = const []});
-
-  @override
-  State<Task> createState() => _TaskState();
-}
-
-class _TaskState extends State<Task> {
-  int inProgressCount = 0;
-  int onHoldCount = 0;
-  int completedCount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _calculateTaskCounts();
-  }
-
-  void _calculateTaskCounts() {
-    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    int inProgress = 0;
-    int onHold = 0;
-    int completed = 0;
-
-    for (var task in taskProvider.tasks) {
-      if (task['status'] == 'Completed') {
-        completed++;
-      } else if (task['status'] == 'On Hold') {
-        onHold++;
-      } else if (_isInProgress(task)) {
-        inProgress++;
-      }
-    }
-
-    setState(() {
-      inProgressCount = inProgress;
-      onHoldCount = onHold;
-      completedCount = completed;
-    });
-  }
-
-  bool _isInProgress(Map<String, String> task) {
-    if (task['startTime'] == null || task['endTime'] == null || task['date'] == null) return false;
-
-    try {
-      DateTime now = DateTime.now();
-      DateTime taskDate = DateTime.parse(task["date"]!);
-
-      DateTime start = DateFormat('hh:mm a').parse(task['startTime']!);
-      DateTime end = DateFormat('hh:mm a').parse(task['endTime']!);
-
-      DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day, start.hour, start.minute);
-      DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day, end.hour, end.minute);
-
-      return now.isAfter(fullStart) && now.isBefore(fullEnd);
-    } catch (e) {
-      print("Error parsing time: $e");
-      return false;
-    }
-  }
-
-  void _markTaskAsCompleted(int index) {
-    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    taskProvider.markTaskAsCompleted(index);
-    _calculateTaskCounts();
-  }
-
-  void _removeTask(int index) {
-    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    taskProvider.removeTask(index);
-    _calculateTaskCounts();
-  }
+class Task extends StatelessWidget {
+  const Task({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -127,57 +56,95 @@ class _TaskState extends State<Task> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: tasks.length,
                           itemBuilder: (context, index) {
-                            bool isInProgress = _isInProgress(tasks[index]);
+                            bool isInProgress =
+                                taskProvider.inProgressTaskCount > 0;
                             String? rawDate = tasks[index]['date'];
                             String formattedDate = rawDate != null
-                                ? DateFormat('dd MMM yyyy').format(DateTime.parse(rawDate))
+                                ? DateFormat('dd MMM yyyy')
+                                    .format(DateTime.parse(rawDate))
                                 : "No Date Set";
 
                             return Slidable(
-                              endActionPane: ActionPane(
-                                motion: StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) => _removeTask(index),
-                                    label: 'Delete',
-                                    icon: Icons.delete,
-                                    backgroundColor: Colors.red,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ],
-                              ),
-                              child: Card(
-                                elevation: 4,
-                                margin: EdgeInsets.symmetric(vertical: 5),
-                                color: tasks[index]['status'] == 'Completed'
-                                    ? Colors.green.shade200
-                                    : isInProgress
-                                        ? Colors.blue.shade200
-                                        : null,
-                                child: ListTile(
-                                  title: Text(tasks[index]['title'] ?? "No Title"),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(tasks[index]['description'] ?? "No Description"),
-                                      SizedBox(height: 5),
-                                      Text("Task Date: $formattedDate"),
-                                      Text("Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
-                                      Text("End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
-                                      SizedBox(height: 10),
-                                      ElevatedButton(
-                                        onPressed: tasks[index]['status'] == 'Completed'
-                                            ? null
-                                            : () => _markTaskAsCompleted(index),
-                                        child: tasks[index]['status'] == 'Completed'
-                                            ? Icon(Icons.check, color: Colors.green)
-                                            : Text("Complete Task"),
-                                      ),
-                                    ],
-                                  ),
+                                endActionPane: ActionPane(
+                                  motion: StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) =>
+                                          taskProvider.removeTask(index),
+                                      label: 'Delete',
+                                      icon: Icons.delete,
+                                      backgroundColor: Colors.red,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            );
+                                child: Card(
+                                  elevation: 4,
+                                  margin: EdgeInsets.symmetric(vertical: 5),
+                                  color: tasks[index]['status'] == 'Completed'
+                                      ? Colors.green.shade200
+                                      : tasks[index]['status'] == 'On Hold'
+                                          ? Colors.amber.shade200
+                                          : isInProgress
+                                              ? Colors.blue.shade200
+                                              : null,
+                                  child: ListTile(
+                                    title: Text(
+                                        tasks[index]['title'] ?? "No Title"),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(tasks[index]['description'] ??
+                                            "No Description"),
+                                        SizedBox(height: 5),
+                                        Text("Task Date: $formattedDate"),
+                                        Text(
+                                            "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                        Text(
+                                            "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: tasks[index]
+                                                          ['status'] ==
+                                                      'Completed'
+                                                  ? null
+                                                  : () => taskProvider
+                                                      .markTaskAsCompleted(
+                                                          index),
+                                              child: tasks[index]['status'] ==
+                                                      'Completed'
+                                                  ? Icon(Icons.check,
+                                                      color: Colors.green)
+                                                  : Text("Complete Task"),
+                                            ),
+                                            SizedBox(width: 10),
+                                            ElevatedButton(
+                                              onPressed: () => taskProvider
+                                                  .markTaskAsOnHold(index),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: tasks[index]
+                                                            ['status'] ==
+                                                        'On Hold'
+                                                    ? Colors.green
+                                                    : Colors.orange,
+                                              ),
+                                              child: Text(tasks[index]
+                                                          ['status'] ==
+                                                      'On Hold'
+                                                  ? "Resume"
+                                                  : "Put on Hold"),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ));
                           },
                         ),
                   SizedBox(height: 20),
@@ -200,19 +167,24 @@ class _TaskState extends State<Task> {
                     childAspectRatio: 1.3,
                     children: [
                       SummaryCard(
-                        count: '$completedCount',
+                        count: '${taskProvider.completedTaskCount}',
                         label: 'Completed',
                         color: Colors.green.shade200,
                       ),
                       SummaryCard(
-                        count: '$inProgressCount',
+                        count: '${taskProvider.inProgressTaskCount}',
                         label: 'In Progress',
                         color: Colors.blue.shade200,
                       ),
                       SummaryCard(
-                        count: '$onHoldCount',
+                        count: '${taskProvider.onHoldTaskCount}',
                         label: 'On Hold',
                         color: Colors.amber.shade200,
+                      ),
+                      SummaryCard(
+                        count: '${taskProvider.totalTaskCount}',
+                        label: 'Total Tasks',
+                        color: Colors.purple.shade200, // Choose any color
                       ),
                     ],
                   ),
@@ -221,9 +193,10 @@ class _TaskState extends State<Task> {
                       height: 250,
                       width: double.infinity,
                       child: Piechart(
-                        inProgress: inProgressCount,
-                        completed: completedCount,
-                        onHold: onHoldCount,
+                        inProgress: taskProvider.inProgressTaskCount,
+                        completed: taskProvider.completedTaskCount,
+                        onHold: taskProvider.onHoldTaskCount,
+                        totalTasks: taskProvider.totalTaskCount,
                       )),
                 ],
               ),

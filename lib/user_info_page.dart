@@ -13,37 +13,61 @@ class UserInfoPage extends StatelessWidget {
       appBar: myAppBar,
       drawer: myDrawer,
       body: Stack(
-        children : [ 
+        children: [
+          // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('background/newbg.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
-                radius: 50,
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Hello, ${user.displayName}',
-                style: TextStyle(fontSize: 24),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Email: ${user.email}',
-                style: TextStyle(fontSize: 18),
-              ),
-            ],
+          
+          // Dark Overlay for better text visibility
+          Container(
+            color: Colors.black.withOpacity(0.3),
           ),
-        ),
-        ]
+
+          // User Info Section
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Profile Picture
+                  CircleAvatar(
+                    backgroundImage: user.photoURL != null && user.photoURL!.isNotEmpty
+                        ? NetworkImage(user.photoURL!)
+                        : const AssetImage('background/default_avatar.png') as ImageProvider,
+                    radius: 50,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Display Name
+                  Text(
+                    'Hello, ${user.displayName ?? "User"}',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Email
+                  Text(
+                    'Email: ${user.email ?? "Not Available"}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

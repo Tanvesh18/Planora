@@ -74,7 +74,7 @@ var myDrawer = Drawer(
             ),
             onTap: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Task(tasks: [],)));
+                  context, MaterialPageRoute(builder: (context) => Task()));
             },
           );
         }),

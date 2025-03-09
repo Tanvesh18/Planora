@@ -16,73 +16,71 @@ class _HelpState extends State<Help> {
       drawer: myDrawer,
       body: Stack(
         children: [
+          // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('background/newbg.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          SingleChildScrollView( // Wrap the content inside SingleChildScrollView
+
+          // Dark overlay for better text visibility
+          Container(
+            color: Colors.black.withOpacity(0.3),
+          ),
+
+          SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0), // Add padding to the content
+              padding: const EdgeInsets.all(16.0), // Consistent Padding
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Heading
-                  Text(
-                    'Importance of Task Management',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[800], // Dark blue text for heading
-                    ),
+                  // Section 1: Task Management
+                  sectionTitle('📌 Importance of Task Management'),
+                  sectionText(
+                    'Task management is essential for organizing, prioritizing, and completing your tasks efficiently. '
+                    'With good task management, you can increase productivity, reduce stress, and meet deadlines effectively.'
                   ),
-                  SizedBox(height: 16), // Add some spacing between text
+                  const SizedBox(height: 16),
+                  sectionTitle('🎯 Benefits for Users'),
+                  BulletPoint(text: '✔️ Increases productivity and efficiency'),
+                  BulletPoint(text: '✔️ Helps you stay organized and focused'),
+                  BulletPoint(text: '✔️ Reduces stress by managing deadlines'),
+                  BulletPoint(text: '✔️ Improves time management and prioritization'),
+                  BulletPoint(text: '✔️ Ensures important tasks are not forgotten'),
 
-                  // Explanation of Task Management
-                  Text(
-                    'Task management is the process of planning, organizing, and prioritizing tasks to efficiently complete projects or goals. Effective task management ensures that no tasks are missed and helps you stay on track. It leads to better productivity and reduced stress.',
-                    style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 0, 0, 0)),
-                  ),
-                  SizedBox(height: 16), // Add some spacing
+                  const SizedBox(height: 24),
 
-                  // Benefits of Task Management
-                  Text(
-                    'Benefits for the User:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  BulletPoint(text: 'Increases productivity and efficiency'),
-                  BulletPoint(text: 'Helps you stay organized and focused'),
-                  BulletPoint(text: 'Reduces stress by managing deadlines'),
-                  BulletPoint(text: 'Improves time management and prioritization'),
-                  BulletPoint(text: 'Ensures important tasks are not forgotten'),
-                  SizedBox(height: 24),
-                  Text(
-                    'Start organizing your tasks today and experience the benefits of effective task management!',
-                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: const Color.fromARGB(255, 0, 0, 0)),
-                  ),
-                  SizedBox(height: 24),
+                  // Section 2: How to Use the App
+                  sectionTitle('📱 How to Use Planora'),
+                  BulletPoint(text: '📝 **Adding Tasks**: Tap on the "Add Task" button and enter the task details.'),
+                  BulletPoint(text: '📅 **Task Calendar**: View tasks in a calendar format to plan efficiently.'),
+                  BulletPoint(text: '✅ **Mark Completed**: Click the checkbox to mark a task as completed.'),
+                  BulletPoint(text: '📊 **Task Overview**: Get a summarized view of all your tasks.'),
+                  BulletPoint(text: '🔄 **Sync Across Devices**: Your tasks are saved using Firebase, so they are accessible anywhere.'),
 
-                  // Introduction to Gemini AI
-                  Text(
-                    'Introduction to Gemini Chatbot:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
-                    ),
+                  const SizedBox(height: 24),
+
+                  // Section 3: Using Gemini AI Chatbot
+                  sectionTitle('🤖 Introduction to Gemini Chatbot'),
+                  sectionText(
+                    'Gemini Chatbot is an advanced AI assistant designed to help you manage tasks, answer questions, '
+                    'and provide smart recommendations. It uses deep learning to process natural language and generate useful responses.'
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Gemini Chatbot is an advanced artificial intelligence model developed by Google DeepMind. It combines multiple AI techniques to understand and generate human-like text, recognize patterns, and provide solutions to complex problems. Gemini AI leverages powerful machine learning algorithms, including deep learning, to process vast amounts of data, making it highly effective for tasks like natural language understanding, image recognition, and more.',
-                    style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 255, 255, 255)),
+                  BulletPoint(text: '🔹 **Smart Task Suggestions**: Get recommendations based on your task history.'),
+                  BulletPoint(text: '🔹 **Quick Reminders**: Ask the chatbot to remind you about important tasks.'),
+                  BulletPoint(text: '🔹 **Instant Help**: Get AI-powered answers to your questions instantly.'),
+
+                  const SizedBox(height: 24),
+
+                  // Encouragement Text
+                  Center(
+                    child: Text(
+                      '🚀 Start managing your tasks efficiently today!',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -92,20 +90,53 @@ class _HelpState extends State<Help> {
       ),
     );
   }
+
+  // A reusable widget for section titles
+  Widget sectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.blue[300], // Light blue for better contrast
+      ),
+    );
+  }
+
+  // A reusable widget for section descriptions
+  Widget sectionText(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, color: Colors.white),
+      ),
+    );
+  }
 }
 
-// A custom widget for bullet points
+// Custom bullet point widget
 class BulletPoint extends StatelessWidget {
   final String text;
   const BulletPoint({super.key, required this.text});
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(Icons.check_circle, color: Colors.blue, size: 18),
-        SizedBox(width: 8),
-        Expanded(child: Text(text, style: TextStyle(fontSize: 16))),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.check_circle, color: Colors.greenAccent, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 16, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
