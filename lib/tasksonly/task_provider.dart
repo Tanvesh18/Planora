@@ -51,25 +51,49 @@ class TaskProvider with ChangeNotifier {
 
   // Helper: Check if task is "In Progress"
   bool _isInProgress(Map<String, dynamic> task) {
-  if (task['status'] == 'Completed') return false; // Ignore completed tasks
-  if (task['startTime'] == null || task['endTime'] == null || task['date'] == null) return false;
+    if (task['status'] == 'Completed') return false; // Ignore completed tasks
+    if (task['startTime'] == null || task['endTime'] == null || task['date'] == null) return false;
 
-  try {
-    DateTime now = DateTime.now();
-    DateTime taskDate = DateTime.parse(task["date"]);
+    try {
+      DateTime now = DateTime.now();
 
-    DateTime start = DateFormat('hh:mm a').parse(task['startTime']);
-    DateTime end = DateFormat('hh:mm a').parse(task['endTime']);
+      // Parse task date properly
+      DateTime taskDate = DateTime.parse(task["date"]);
 
-    DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day, start.hour, start.minute);
-    DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day, end.hour, end.minute);
+      // Parse start and end time with AM/PM format
+      DateTime startTime = DateFormat('hh:mm a').parse(task['startTime']);
+      DateTime endTime = DateFormat('hh:mm a').parse(task['endTime']);
 
-    return now.isAfter(fullStart) && now.isBefore(fullEnd);
-  } catch (e) {
-    print("Error parsing time: $e");
-    return false;
+      // Merge taskDate with start and end times
+      DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day, startTime.hour, startTime.minute);
+      DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day, endTime.hour, endTime.minute);
+
+      // Ensure we are comparing the correct date
+      if (now.year == taskDate.year && now.month == taskDate.month && now.day == taskDate.day) {
+        bool inProgress = now.isAfter(fullStart) && now.isBefore(fullEnd);
+
+        // Update task status in provider
+        int taskIndex = _tasks.indexOf(task);
+        if (taskIndex != -1) {
+          if (inProgress && _tasks[taskIndex]['status'] != 'In Progress') {
+            _tasks[taskIndex]['status'] = 'In Progress';
+            notifyListeners(); // Notify UI of the change
+          } else if (!inProgress && _tasks[taskIndex]['status'] == 'In Progress') {
+            _tasks[taskIndex]['status'] = 'Pending'; // Reset if outside time range
+            notifyListeners();
+          }
+        }
+
+        return inProgress;
+      }
+
+      return false; // If it's not the same day, it's not in progress
+    } catch (e) {
+      print("Error parsing time: $e");
+      return false;
+    }
   }
-}
+
 void markTaskAsOnHold(int index) {
   if (index >= 0 && index < _tasks.length &&
       _tasks[index]['status'] != 'Completed') {  // Prevent on hold if completed

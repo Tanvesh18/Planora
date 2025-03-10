@@ -56,14 +56,12 @@ class Task extends StatelessWidget {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: tasks.length,
                           itemBuilder: (context, index) {
-                            bool isInProgress =
-                                taskProvider.inProgressTaskCount > 0;
+                            bool isInProgress = taskProvider.tasks[index]['status'] == 'In Progress';
                             String? rawDate = tasks[index]['date'];
                             String formattedDate = rawDate != null
                                 ? DateFormat('dd MMM yyyy')
                                     .format(DateTime.parse(rawDate))
                                 : "No Date Set";
-
                             return Slidable(
                                 endActionPane: ActionPane(
                                   motion: StretchMotion(),
