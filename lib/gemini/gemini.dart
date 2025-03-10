@@ -20,6 +20,8 @@ class _ChatbotState extends State<Chatbot> {
   List<ChatMessage> messages = [];
   ChatUser currentUser = ChatUser(firstName: 'User', id: "0");
   ChatUser geminiUser = ChatUser(firstName: 'Gemini', id: "1");
+  bool isLoading = false; // Typing indicator flag
+  String bufferedResponse = ""; // Buffer for streamed text
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +30,29 @@ class _ChatbotState extends State<Chatbot> {
       drawer: myDrawer,
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('background/newbg.jpeg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-         _buildUi(),
+          _buildBackground(),
+          _buildChatUI(),
         ],
       ),
     );
   }
 
-  Widget _buildUi() {
+  Widget _buildBackground() {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('background/newbg.jpeg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withOpacity(0.2), // Improve text visibility
+            BlendMode.darken,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatUI() {
     return DashChat(
       inputOptions: InputOptions(
         trailing: [
@@ -53,6 +63,7 @@ class _ChatbotState extends State<Chatbot> {
         ],
       ),
       currentUser: currentUser,
+      typingUsers: isLoading ? [geminiUser] : [], // Show typing indicator
       onSend: _sendMessage,
       messages: messages,
     );
@@ -60,68 +71,66 @@ class _ChatbotState extends State<Chatbot> {
 
   void _sendMessage(ChatMessage chatMessage) {
     setState(() {
-      messages = [chatMessage, ...messages];
+      messages.insert(0, chatMessage);
+      isLoading = true; // Show typing indicator
     });
 
     try {
       String question = chatMessage.text;
       List<Uint8List>? images;
 
-      // Check for media and convert to bytes if available
       if (chatMessage.medias?.isNotEmpty ?? false) {
-        images = [
-          File(chatMessage.medias!.first.url).readAsBytesSync(),
-        ];
+        images = [File(chatMessage.medias!.first.url).readAsBytesSync()];
       }
 
-      gemini.streamGenerateContent(question, images: images).listen((event) {
-        ChatMessage? lastMessage = messages.isNotEmpty ? messages.first : null;
+      bufferedResponse = ""; // Reset buffer
 
-        String response = event.content?.parts
+      gemini.streamGenerateContent(question, images: images).listen((event) {
+        String partialResponse = event.content?.parts
                 ?.map((part) => (part as TextPart).text)
                 .join(" ") ??
             "";
 
-        // Update the chat with Gemini's response
-        if (lastMessage != null && lastMessage.user == geminiUser) {
-          if (messages.isNotEmpty) {
-            messages.removeAt(0); // Remove the last message if it's from Gemini
-          }
-          lastMessage.text += response;
-          setState(() {
-            messages = [lastMessage, ...messages];
-          });
-        } else {
-          ChatMessage message = ChatMessage(
-            user: geminiUser,
-            createdAt: DateTime.now(),
-            text: response,
+        bufferedResponse += " " + partialResponse; // Append new text safely
+
+        setState(() {
+          messages.removeWhere((m) => m.user == geminiUser); // Remove old Gemini message
+          messages.insert(
+            0,
+            ChatMessage(
+              user: geminiUser,
+              createdAt: DateTime.now(),
+              text: _cleanResponse(bufferedResponse),
+            ),
           );
-          setState(() {
-            messages = [message, ...messages];
-          });
-        }
+        });
+      }, onError: (error) {
+        debugPrint('Error: $error');
+        _showError("Something went wrong while generating a response.");
+      }, onDone: () {
+        setState(() => isLoading = false); // Hide typing indicator
       });
     } catch (e) {
       debugPrint('Error: $e');
-      // Optionally, show an alert to the user about the error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: $e')),
-      );
+      _showError("Unexpected error occurred.");
     }
+  }
+
+  /// Cleans up AI response (fixes contractions, removes extra spaces)
+  String _cleanResponse(String response) {
+    return response
+        .replaceAll(" '", "'") // Fixes misplaced apostrophes
+        .replaceAll("\n", " ") // Remove unnecessary newlines
+        .replaceAll(RegExp(r'\s+'), ' ') // Remove extra spaces
+        .trim();
   }
 
   void _sendMediaMessage() async {
     ImagePicker picker = ImagePicker();
 
-    // Request gallery access and handle permission errors
     try {
       XFile? file = await picker.pickImage(source: ImageSource.gallery);
       if (file != null) {
-        // Ensure file name is captured
-        String fileName = file.name;
-
-        // Send media message
         ChatMessage chatMessage = ChatMessage(
           user: currentUser,
           createdAt: DateTime.now(),
@@ -129,7 +138,7 @@ class _ChatbotState extends State<Chatbot> {
           medias: [
             ChatMedia(
               url: file.path,
-              fileName: fileName, // Use the file's name
+              fileName: file.name,
               type: MediaType.image,
             )
           ],
@@ -139,9 +148,12 @@ class _ChatbotState extends State<Chatbot> {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: $e')),
-      );
+      _showError("Failed to pick image.");
     }
+  }
+
+  void _showError(String message) {
+    setState(() => isLoading = false); // Hide typing indicator
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }
