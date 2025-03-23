@@ -12,7 +12,7 @@ class Task extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: true);
     final tasks = taskProvider.tasks;
 
     return Scaffold(
@@ -56,93 +56,91 @@ class Task extends StatelessWidget {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: tasks.length,
                           itemBuilder: (context, index) {
-                            bool isInProgress = taskProvider.tasks[index]['status'] == 'In Progress';
+                            bool isInProgress = taskProvider.tasks[index]
+                                    ['status'] ==
+                                'In Progress';
                             String? rawDate = tasks[index]['date'];
                             String formattedDate = rawDate != null
                                 ? DateFormat('dd MMM yyyy')
                                     .format(DateTime.parse(rawDate))
                                 : "No Date Set";
                             return Slidable(
-                                endActionPane: ActionPane(
-                                  motion: StretchMotion(),
-                                  children: [
-                                    SlidableAction(
-                                      onPressed: (context) =>
-                                          taskProvider.removeTask(index),
-                                      label: 'Delete',
-                                      icon: Icons.delete,
-                                      backgroundColor: Colors.red,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ],
-                                ),
-                                child: Card(
-                                  elevation: 4,
-                                  margin: EdgeInsets.symmetric(vertical: 5),
-                                  color: tasks[index]['status'] == 'Completed'
-                                      ? Colors.green.shade200
-                                      : tasks[index]['status'] == 'On Hold'
-                                          ? Colors.amber.shade200
-                                          : isInProgress
-                                              ? Colors.blue.shade200
-                                              : null,
-                                  child: ListTile(
-                                    title: Text(
-                                        tasks[index]['title'] ?? "No Title"),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(tasks[index]['description'] ??
-                                            "No Description"),
-                                        SizedBox(height: 5),
-                                        Text("Task Date: $formattedDate"),
-                                        Text(
-                                            "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
-                                        Text(
-                                            "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
-                                        SizedBox(height: 10),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: tasks[index]
-                                                          ['status'] ==
-                                                      'Completed'
-                                                  ? null
-                                                  : () => taskProvider
-                                                      .markTaskAsCompleted(
-                                                          index),
-                                              child: tasks[index]['status'] ==
-                                                      'Completed'
-                                                  ? Icon(Icons.check,
-                                                      color: Colors.green)
-                                                  : Text("Complete Task"),
-                                            ),
-                                            SizedBox(width: 10),
-                                            ElevatedButton(
-                                              onPressed: () => taskProvider
-                                                  .markTaskAsOnHold(index),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: tasks[index]
-                                                            ['status'] ==
-                                                        'On Hold'
-                                                    ? Colors.green
-                                                    : Colors.orange,
-                                              ),
-                                              child: Text(tasks[index]
-                                                          ['status'] ==
-                                                      'On Hold'
-                                                  ? "Resume"
-                                                  : "Put on Hold"),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                              endActionPane: ActionPane(
+                                motion: StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) =>
+                                        taskProvider.removeTask(index),
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    backgroundColor: Colors.red,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                ));
+                                ],
+                              ),
+                              child: Card(
+                                elevation: 4,
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                color: tasks[index]['status'] == 'Completed'
+                                    ? Colors.green.shade200
+                                    : tasks[index]['status'] == 'On Hold'
+                                        ? Colors.amber
+                                            .shade200 // Ensure "On Hold" is Yellow
+                                        : isInProgress
+                                            ? Colors.blue.shade200
+                                            : null,
+                                child: ListTile(
+                                  title:
+                                      Text(tasks[index]['title'] ?? "No Title"),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tasks[index]['description'] ??
+                                          "No Description"),
+                                      SizedBox(height: 5),
+                                      Text("Task Date: $formattedDate"),
+                                      Text(
+                                          "Start Time: ${tasks[index]['startTime'] ?? 'Not Set'}"),
+                                      Text(
+                                          "End Time: ${tasks[index]['endTime'] ?? 'Not Set'}"),
+                                      SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: tasks[index]['status'] ==
+                                                    'Completed'
+                                                ? null
+                                                : () => taskProvider
+                                                    .markTaskAsCompleted(index),
+                                            child: tasks[index]['status'] ==
+                                                    'Completed'
+                                                ? Icon(Icons.check,
+                                                    color: Colors.green)
+                                                : Text("Complete Task"),
+                                          ),
+                                          SizedBox(width: 10),
+                                          ElevatedButton(
+                                            onPressed: tasks[index]['status'] ==
+                                                    'Completed'
+                                                ? null
+                                                : () => taskProvider
+                                                    .toggleTaskOnHold(index),
+                                            child: tasks[index]['status'] ==
+                                                    'On Hold'
+                                                ? Text(
+                                                    "Resume") // Show "Resume" when task is on hold
+                                                : Text("On Hold"),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
                           },
                         ),
                   SizedBox(height: 20),
@@ -175,14 +173,14 @@ class Task extends StatelessWidget {
                         color: Colors.blue.shade200,
                       ),
                       SummaryCard(
-                        count: '${taskProvider.onHoldTaskCount}',
-                        label: 'On Hold',
-                        color: Colors.amber.shade200,
-                      ),
-                      SummaryCard(
                         count: '${taskProvider.totalTaskCount}',
                         label: 'Total Tasks',
                         color: Colors.purple.shade200, // Choose any color
+                      ),
+                      SummaryCard(
+                        count: '${taskProvider.onHoldTaskCount}',
+                        label: 'On Hold',
+                        color: Colors.amber.shade200,
                       ),
                     ],
                   ),
@@ -193,8 +191,8 @@ class Task extends StatelessWidget {
                       child: Piechart(
                         inProgress: taskProvider.inProgressTaskCount,
                         completed: taskProvider.completedTaskCount,
-                        onHold: taskProvider.onHoldTaskCount,
                         totalTasks: taskProvider.totalTaskCount,
+                        toggleTaskOnHold: taskProvider.onHoldTaskCount,
                       )),
                 ],
               ),

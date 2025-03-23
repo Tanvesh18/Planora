@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 
 class Piechart extends StatelessWidget {
   final int inProgress;
-  final int onHold;
+  final int toggleTaskOnHold;
   final int completed;
   final int totalTasks;
 
   const Piechart({
     super.key,
     required this.inProgress,
-    required this.onHold,
     required this.completed,
-    required this.totalTasks,
+    required this.totalTasks, 
+    required this.toggleTaskOnHold,
   });
 
   @override
@@ -39,13 +39,6 @@ class Piechart extends StatelessWidget {
                 color: Colors.blue,
                 title: '$inProgress\nIn Progress',
                 titleStyle: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-              PieChartSectionData(
-                value: onHold.toDouble(),
-                radius: 50,
-                color: Colors.yellow,
-                title: '$onHold\nOn Hold',
-                titleStyle: TextStyle(color: Colors.black, fontSize: 12),
               ),
               PieChartSectionData(
                 value: completed.toDouble(),

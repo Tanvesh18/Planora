@@ -11,8 +11,24 @@ class TaskProvider with ChangeNotifier {
   }
 
   void markTaskAsCompleted(int index) {
-    if (index >= 0 && index < _tasks.length && _tasks[index]['status'] != 'Completed') {
+    if (index >= 0 &&
+        index < _tasks.length &&
+        _tasks[index]['status'] != 'Completed') {
       _tasks[index]['status'] = 'Completed';
+      notifyListeners();
+    }
+  }
+
+  void toggleTaskOnHold(int index) {
+    if (index >= 0 && index < _tasks.length) {
+      if (_tasks[index]['status'] == 'On Hold') {
+        // Resume task: Change status back to Pending or In Progress
+        _tasks[index]['status'] =
+            _isInProgress(_tasks[index]) ? 'In Progress' : 'Pending';
+      } else {
+        // Put task on hold
+        _tasks[index]['status'] = 'On Hold';
+      }
       notifyListeners();
     }
   }
@@ -38,21 +54,28 @@ class TaskProvider with ChangeNotifier {
 
       DateTime taskDate = DateTime.parse(dateString);
       return taskDate.year == day.year &&
-             taskDate.month == day.month &&
-             taskDate.day == day.day;
+          taskDate.month == day.month &&
+          taskDate.day == day.day;
     }).toList();
   }
 
   // Get tasks based on status
-  int get completedTaskCount => _tasks.where((task) => task['status'] == 'Completed').length;
-  int get onHoldTaskCount => _tasks.where((task) => task['status'] == 'On Hold').length;
-  int get inProgressTaskCount => _tasks.where((task) => _isInProgress(task)).length;
+  int get completedTaskCount =>
+      _tasks.where((task) => task['status'] == 'Completed').length;
+  int get onHoldTaskCount =>
+      _tasks.where((task) => task['status'] == 'On Hold').length;
+  int get inProgressTaskCount =>
+      _tasks.where((task) => _isInProgress(task)).length;
   int get totalTaskCount => _tasks.length;
 
   // Helper: Check if task is "In Progress"
   bool _isInProgress(Map<String, dynamic> task) {
-    if (task['status'] == 'Completed') return false; // Ignore completed tasks
-    if (task['startTime'] == null || task['endTime'] == null || task['date'] == null) return false;
+    if (task['status'] == 'Completed' || task['status'] == 'On Hold')
+      return false; // Ignore completed and on-hold tasks
+
+    if (task['startTime'] == null ||
+        task['endTime'] == null ||
+        task['date'] == null) return false;
 
     try {
       DateTime now = DateTime.now();
@@ -65,11 +88,15 @@ class TaskProvider with ChangeNotifier {
       DateTime endTime = DateFormat('hh:mm a').parse(task['endTime']);
 
       // Merge taskDate with start and end times
-      DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day, startTime.hour, startTime.minute);
-      DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day, endTime.hour, endTime.minute);
+      DateTime fullStart = DateTime(taskDate.year, taskDate.month, taskDate.day,
+          startTime.hour, startTime.minute);
+      DateTime fullEnd = DateTime(taskDate.year, taskDate.month, taskDate.day,
+          endTime.hour, endTime.minute);
 
       // Ensure we are comparing the correct date
-      if (now.year == taskDate.year && now.month == taskDate.month && now.day == taskDate.day) {
+      if (now.year == taskDate.year &&
+          now.month == taskDate.month &&
+          now.day == taskDate.day) {
         bool inProgress = now.isAfter(fullStart) && now.isBefore(fullEnd);
 
         // Update task status in provider
@@ -78,8 +105,10 @@ class TaskProvider with ChangeNotifier {
           if (inProgress && _tasks[taskIndex]['status'] != 'In Progress') {
             _tasks[taskIndex]['status'] = 'In Progress';
             notifyListeners(); // Notify UI of the change
-          } else if (!inProgress && _tasks[taskIndex]['status'] == 'In Progress') {
-            _tasks[taskIndex]['status'] = 'Pending'; // Reset if outside time range
+          } else if (!inProgress &&
+              _tasks[taskIndex]['status'] == 'In Progress') {
+            _tasks[taskIndex]['status'] =
+                'Pending'; // Reset if outside time range
             notifyListeners();
           }
         }
@@ -93,21 +122,4 @@ class TaskProvider with ChangeNotifier {
       return false;
     }
   }
-
-void markTaskAsOnHold(int index) {
-  if (index >= 0 && index < _tasks.length &&
-      _tasks[index]['status'] != 'Completed') {  // Prevent on hold if completed
-
-    if (_tasks[index]['status'] == 'On Hold') {
-      // Resume Task
-      _tasks[index]['status'] = 'In Progress';
-      _tasks[index].remove('holdTime'); // Remove hold time on resume
-    } else {
-      // Put Task on Hold
-      _tasks[index]['status'] = 'On Hold';
-      _tasks[index]['holdTime'] = DateTime.now().toIso8601String();
-    }
-    notifyListeners();
-  }
-}
 }
