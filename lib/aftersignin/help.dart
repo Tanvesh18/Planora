@@ -19,20 +19,7 @@ class _HelpState extends State<Help> {
       body: Stack(
         children: [
           // Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('background/newbg.jpeg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.black.withOpacity(0.2),
-              ),
-            ),
-          ),
+          mybackground,
 
           SingleChildScrollView(
             child: Padding(

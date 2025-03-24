@@ -21,20 +21,7 @@ class Task extends StatelessWidget {
       appBar: myAppBar,
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('background/newbg.jpeg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.black.withOpacity(0.1),
-              ),
-            ),
-          ),
+          mybackground,
           Padding(
             padding: EdgeInsets.all(11.0),
             child: SingleChildScrollView(

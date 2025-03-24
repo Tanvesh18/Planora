@@ -79,20 +79,7 @@ class _AssigntaskState extends State<Assigntask> {
       drawer: myDrawer,
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("background/newbg.jpeg"),
-                fit: BoxFit.cover,
-              ),
-            ),
-             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX:4, sigmaY:4),
-              child: Container(
-                color: Colors.black.withOpacity(0.1),
-              ),
-            ),
-          ),
+          mybackground,
           SingleChildScrollView(
             child: Column(
               children: [

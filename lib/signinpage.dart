@@ -1,3 +1,4 @@
+import 'package:authenticationprac/constants/constants.dart';
 import 'package:authenticationprac/tasksonly/task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -87,14 +88,7 @@ class _SigninpageState extends State<Signinpage> {
       backgroundColor: const Color.fromARGB(255, 211, 203, 203),
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('background/coolbg2.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          mysigninbackground,
           SingleChildScrollView(
             child: Center(
               child: Column(

@@ -200,3 +200,33 @@ var myAppBar = AppBar(
     ),
   ),
 );
+
+var mybackground= Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('background/newbg.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ),
+          );
+
+var mysigninbackground= Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('background/ncoolbg2.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ),
+          );
