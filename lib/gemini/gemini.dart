@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:authenticationprac/constants/constants.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
@@ -43,12 +44,14 @@ class _ChatbotState extends State<Chatbot> {
         image: DecorationImage(
           image: AssetImage('background/newbg.jpeg'),
           fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.2), // Improve text visibility
-            BlendMode.darken,
-          ),
         ),
       ),
+      child: BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: Container(
+        color: Colors.black.withOpacity(0.2),
+      ),
+    ),
     );
   }
 

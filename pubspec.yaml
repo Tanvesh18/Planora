@@ -75,9 +75,6 @@ flutter:
     - background/googlelogo.png
     - background/finaldrawerbg.jpg
     - background/newbg.jpeg
-    - background/flutterpic.jpg
-    - background/firebasepic.jpg
-    - background/vscodepic.jpg
     # - fonts\impact.ttf
   #   - images/a_dot_ham.jpeg
 

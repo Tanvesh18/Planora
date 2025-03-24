@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:authenticationprac/constants/constants.dart';
 import 'package:authenticationprac/tasksonly/task_provider.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +84,12 @@ class _AssigntaskState extends State<Assigntask> {
               image: DecorationImage(
                 image: AssetImage("background/newbg.jpeg"),
                 fit: BoxFit.cover,
+              ),
+            ),
+             child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX:4, sigmaY:4),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
               ),
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 
 class Task extends StatelessWidget {
   const Task({super.key});
@@ -25,6 +26,12 @@ class Task extends StatelessWidget {
               image: DecorationImage(
                 image: AssetImage('background/newbg.jpeg'),
                 fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
               ),
             ),
           ),
