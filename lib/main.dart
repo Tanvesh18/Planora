@@ -1,3 +1,4 @@
+import 'package:authenticationprac/register.dart';
 import 'package:authenticationprac/signinpage.dart';
 import 'package:authenticationprac/tasksonly/task.dart';
 import 'package:authenticationprac/tasksonly/task_provider.dart';
@@ -29,8 +30,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/tasks',
+      initialRoute: '/signin',
       routes: {
+        '/register': (context) => const Register(),
         '/signin': (context) => Signinpage(),
         '/tasks': (context) => Task(),
       },

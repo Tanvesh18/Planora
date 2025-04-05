@@ -73,8 +73,6 @@ class Task extends StatelessWidget {
                                 ],
                               ),
                               child: Card(
-                                elevation: 4,
-                                margin: EdgeInsets.symmetric(vertical: 5),
                                 color: tasks[index]['status'] == 'Completed'
                                     ? Colors.green.shade200
                                     : tasks[index]['status'] == 'On Hold'
